@@ -1,9 +1,10 @@
 package DateTime::Calendar::TauStation;
 
 use strict;
-use vars qw ( $VERSION $SECS_2_UNITS );
+use vars qw ( $VERSION $SECS_2_UNITS @EXPORT_OK );
 
 use Carp;
+use Exporter 'import';
 use POSIX 'floor';
 use parent 'DateTime';
 
@@ -13,6 +14,8 @@ $VERSION = '0.1.1';
 $VERSION = eval $VERSION;
 
 $SECS_2_UNITS = 0.864;
+
+@EXPORT_OK = qw( gct2seconds );
 
 =head1 NAME
 
@@ -82,28 +85,18 @@ sub new {
     if ( grep { exists $args{$_} } @gct_fields ) {
         $self = $class->catastrophe;
 
-        my $sign    = $args{gct_sign}    || "";
-        my $cycle   = $args{gct_cycle}   || 0;
-        my $day     = $args{gct_day}     || 0;
-        my $segment = $args{gct_segment} || 0;
-        my $unit    = $args{gct_unit}    || 0;
+        my $seconds = gct2seconds(%args);
 
-        $sign = "" unless "-" eq $sign;
+        my $is_negative;
+        $is_negative = 1 if $seconds < 0;
 
-        my $total_units = $unit;
-        $total_units += $segment * 1_000;
-        $total_units += $day * 100 * 1_000;
-        $total_units += $cycle * 100 * 100 * 1_000;
+        $seconds = abs $seconds;
 
-        my $add_secs = $total_units * $SECS_2_UNITS;
-        # round
-        $add_secs = int( $add_secs + 0.5 );
-
-        if ( "-" eq $sign ) {
-            $self->subtract( seconds => $add_secs );
+        if ( $is_negative ) {
+            $self->subtract( seconds => $seconds );
         }
         else {
-            $self->add( seconds => $add_secs );
+            $self->add( seconds => $seconds );
         }
     }
     elsif ( %args ) {
@@ -204,6 +197,43 @@ sub gct_unit {
     my ( $self ) = @_;
 
     return $self->_return_gct('unit');
+}
+
+=head1 EXPORTED SUBROUTINES
+
+=head2 gct2seconds
+
+Accepts the same arguments as L</new>, returns a signed integer.
+
+=cut
+
+sub gct2seconds {
+    my ( %args ) = @_;
+
+    my $sign    = $args{gct_sign}    || "";
+    my $cycle   = $args{gct_cycle}   || 0;
+    my $day     = $args{gct_day}     || 0;
+    my $segment = $args{gct_segment} || 0;
+    my $unit    = $args{gct_unit}    || 0;
+
+    my $is_negative;
+    $is_negative = 1 if "-" eq $sign;
+
+    my $total_units = $unit;
+    $total_units += $segment * 1_000;
+    $total_units += $day * 100 * 1_000;
+    $total_units += $cycle * 100 * 100 * 1_000;
+
+    my $add_secs = $total_units * $SECS_2_UNITS;
+
+    # round
+    $add_secs = int( $add_secs + 0.5 );
+
+    if ( $is_negative ) {
+        $add_secs = 0-$add_secs;
+    }
+
+    return $add_secs;
 }
 
 sub _return_gct {

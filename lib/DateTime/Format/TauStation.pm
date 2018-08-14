@@ -71,7 +71,7 @@ my $duration_constructor = sub {
         map { "${_}s" }
         @gct_fields;
 
-    # field not pluralized
+    # this field isn't pluralized
     $gct{gct_sign} = $args{gct_sign};
 
     return DateTime::Duration::TauStation->new(%gct);

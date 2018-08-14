@@ -49,15 +49,10 @@ sub new {
     }
 
     if ( %gct_args ) {
-        my $dt1 = DateTime::Calendar::TauStation->catastrophe;
-
-        # relative to catastrophe
-        my $dt2 = DateTime::Calendar::TauStation->new( %gct_args );
-
-        my $diff = $dt2->epoch() - $dt1->epoch();
+        my $seconds = DateTime::Calendar::TauStation::gct2seconds( %gct_args );
 
         $self = $class->SUPER::new(
-            seconds => $diff,
+            seconds => $seconds,
         );
     }
     else {
