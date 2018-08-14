@@ -8,7 +8,7 @@ use DateTime::Calendar::TauStation;
 use DateTime::Duration::TauStation;
 use parent 'DateTime::Format::Builder';
 
-$VERSION = '0.1.1';
+$VERSION = '0.1.2';
 $VERSION = eval $VERSION;
 
 =head1 NAME

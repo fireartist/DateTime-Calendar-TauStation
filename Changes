@@ -1,3 +1,9 @@
+0.1.2 2018-08-14T22:50:00
+
+    - Update META with new github repo
+
+    - Fix docs typos
+
 0.1.1 2018-08-14T22:40:00
 
     - Renamed dist to DateTime-Calendar-TauStation
