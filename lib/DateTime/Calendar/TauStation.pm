@@ -1,7 +1,7 @@
 package DateTime::Calendar::TauStation;
 
 use strict;
-use vars qw ( $VERSION $SECS_2_UNITS @EXPORT_OK );
+use vars qw ( $SECS_2_UNITS @EXPORT_OK );
 
 use Carp;
 use Exporter 'import';
@@ -9,9 +9,6 @@ use POSIX 'floor';
 use parent 'DateTime';
 
 require DateTime::Duration;
-
-$VERSION = '0.1.2';
-$VERSION = eval $VERSION;
 
 $SECS_2_UNITS = 0.864;
 

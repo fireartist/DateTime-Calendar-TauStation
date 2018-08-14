@@ -1,15 +1,11 @@
 package DateTime::Duration::TauStation;
 
 use strict;
-use vars qw ($VERSION);
 
 use Carp;
 use DateTime::Calendar::TauStation;
 use POSIX 'floor';
 use parent 'DateTime::Duration';
-
-$VERSION = '0.1.2';
-$VERSION = eval $VERSION;
 
 =head1 NAME
 
