@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 21;
+use Test::More tests => 34;
 use DateTime::Format::TauStation;
 
 {
@@ -13,6 +13,7 @@ use DateTime::Format::TauStation;
     is($dt->second,            27, 'second');
     is($dt->nanosecond,    689615, 'nanosecond');
 
+    is($dt->gct_sign,          '', 'gct_sign');
     is($dt->gct_cycle,        000, 'gct_cycle');
     is($dt->gct_day,           00, 'gct_day');
     is($dt->gct_segment,       00, 'gct_segment');
@@ -28,8 +29,25 @@ use DateTime::Format::TauStation;
     is($dt->minute,            57, 'minute');
     is($dt->second,            13, 'second');
 
+    is($dt->gct_sign,          '', 'gct_sign');
     is($dt->gct_cycle,        198, 'gct_cycle');
     is($dt->gct_day,           15, 'gct_day');
     is($dt->gct_segment,       03, 'gct_segment');
     is($dt->gct_unit,         973, 'gct_unit');
+}
+
+{
+    my $dt = DateTime::Format::TauStation->parse_datetime('-0.0/01:000 GCT');
+    is($dt->year,            1964, 'year');
+    is($dt->month,             01, 'month');
+    is($dt->day,               21, 'day');
+    is($dt->hour,              23, 'hour');
+    is($dt->minute,            46, 'minute');
+    is($dt->second,            03, 'second');
+
+    is($dt->gct_sign,         '-', 'gct_sign');
+    is($dt->gct_cycle,        000, 'gct_cycle');
+    is($dt->gct_day,           00, 'gct_day');
+    is($dt->gct_segment,       01, 'gct_segment');
+    is($dt->gct_unit,         000, 'gct_unit');
 }

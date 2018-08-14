@@ -2,6 +2,8 @@
 
     - Renamed dist to DateTime-Calendar-TauStation
 
+    - Added support for negative datetimes & durations
+
 0.1 2018-08-14T08:00:00
 
     - Initial release

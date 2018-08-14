@@ -39,6 +39,7 @@ L<TauStation|https://taustation.space>.
 
 my @gct_fields = qw( gct_cycle gct_day gct_segment gct_unit );
 
+my $sign    = qr! ( [-]?       ) !x;
 my $cycle   = qr! ( [0-9]+     ) !x;
 my $day     = qr! ( [0-9]{1,2} ) !x;
 my $segment = qr! ( [0-9]{1,2} ) !x;
@@ -47,18 +48,18 @@ my $unit    = qr! ( [0-9]{1,3} ) !x;
 my $date    = qr! $cycle   \. $day  !x;
 my $time    = qr! $segment :  $unit !x;
 
-my $gct_datetime = qr! ^ $date / $time [ ] GCT $ !x;
+my $gct_datetime = qr! ^ $sign $date / $time [ ] GCT $ !x;
 
-my $gct_duration_cdsu = qr! D $date / $time [ ] GCT $ !x;
-my $gct_duration_dsu  = qr! D  $day / $time [ ] GCT $ !x;
-my $gct_duration_su   = qr! D       / $time [ ] GCT $ !x;
+my $gct_duration_cdsu = qr! D $sign $date / $time [ ] GCT $ !x;
+my $gct_duration_dsu  = qr! D $sign  $day / $time [ ] GCT $ !x;
+my $gct_duration_su   = qr! D $sign       / $time [ ] GCT $ !x;
 
 my $parse_datetime = {
     regex       => $gct_datetime,
-    params      => [@gct_fields],
+    params      => ['gct_sign', @gct_fields],
     constructor => sub {
         my ( $parser, %args ) = @_;
-        my %gct = map { $_ => $args{$_} } @gct_fields;
+        my %gct = map { $_ => $args{$_} } 'gct_sign', @gct_fields;
 
         return DateTime::Calendar::TauStation->new(%gct);
     },
@@ -70,23 +71,26 @@ my $duration_constructor = sub {
         map { "${_}s" }
         @gct_fields;
 
+    # field not pluralized
+    $gct{gct_sign} = $args{gct_sign};
+
     return DateTime::Duration::TauStation->new(%gct);
 };
 
 my @parse_duration = (
     {
         regex  => $gct_duration_cdsu,
-        params => [qw( gct_cycles gct_days gct_segments gct_units )],
+        params => [qw( gct_sign gct_cycles gct_days gct_segments gct_units )],
         constructor => $duration_constructor,
     },
     {
         regex  => $gct_duration_dsu,
-        params => [qw( gct_days gct_segments gct_units )],
+        params => [qw( gct_sign gct_days gct_segments gct_units )],
         constructor => $duration_constructor,
     },
     {
         regex  => $gct_duration_su,
-        params => [qw( gct_segments gct_units )],
+        params => [qw( gct_sign gct_segments gct_units )],
         constructor => $duration_constructor,
     },
 );
@@ -122,9 +126,12 @@ Returns a L<DateTime::Calendar::TauStation> object.
 sub format_datetime {
     my ( $self, $dt ) = @_;
 
-    my ( $cycles, $days, $segments, $units ) = @{ $dt->_return_gct };
+    my ( $sign, $cycles, $days, $segments, $units ) = @{ $dt->_return_gct };
 
-    return sprintf "%.3d.%.2d/%.2d:%.3d GCT",
+    $sign = "" unless "-" eq $sign;
+
+    return sprintf "%s%.3d.%.2d/%.2d:%.3d GCT",
+        $sign,
         $cycles,
         $days,
         $segments,
@@ -145,24 +152,29 @@ sub format_duration {
 
     my $seconds = $dur->delta_seconds;
 
-    my ( $cycles, $days, $segments, $units ) =
+    my ( $sign, $cycles, $days, $segments, $units ) =
         @{ DateTime::Calendar::TauStation->new->_return_gct( undef, $seconds ) };
 
+    $sign = "" unless "-" eq $sign;
+
     if ( $cycles ) {
-        return sprintf "D%d.%d/%.2d:%.3d GCT",
+        return sprintf "D%s%d.%d/%.2d:%.3d GCT",
+            $sign,
             $cycles,
             $days,
             $segments,
             $units;
     }
     elsif ( $days ) {
-        return sprintf "D%d/%.2d:%.3d GCT",
+        return sprintf "D%s%d/%.2d:%.3d GCT",
+            $sign,
             $days,
             $segments,
             $units;
     }
     else {
-        return sprintf "D/%.2d:%.3d GCT",
+        return sprintf "D%s/%.2d:%.3d GCT",
+            $sign,
             $segments,
             $units;
     }
@@ -173,11 +185,6 @@ sub format_duration {
 1;
 
 __END__
-
-=head1 Limitations
-
-Currently does not support negative GCT (pre-catastrophe) dates or negative
-durations.
 
 =head1 AUTHOR
 

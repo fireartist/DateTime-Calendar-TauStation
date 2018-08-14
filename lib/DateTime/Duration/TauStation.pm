@@ -43,6 +43,11 @@ sub new {
         grep { exists $args{"${_}s"} }
         @gct_fields;
 
+    if ( exists $args{gct_sign} ) {
+        # this field isn't pluralized
+        $gct_args{gct_sign} = $args{gct_sign};
+    }
+
     if ( %gct_args ) {
         my $dt1 = DateTime::Calendar::TauStation->catastrophe;
 
@@ -60,6 +65,18 @@ sub new {
     }
 
     return $self;
+}
+
+=head2 gct_sign
+
+Returns the C<sign> portion of a duration.
+
+=cut
+
+sub gct_sign {
+    my ( $self ) = @_;
+
+    return DateTime::Calendar::TauStation->catastrophe->add_duration( $self )->gct_sign;
 }
 
 =head1 METHODS
@@ -111,11 +128,6 @@ sub gct_units {
 
     return DateTime::Calendar::TauStation->catastrophe->add_duration( $self )->gct_unit;
 }
-
-=head1 Limitations
-
-Currently does not support negative GCT (pre-catastrophe) dates or negative
-durations.
 
 =head1 AUTHOR
 

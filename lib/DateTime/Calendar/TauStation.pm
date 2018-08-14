@@ -67,11 +67,13 @@ Accepts arguments:
 
 =item gct_unit
 
+=item gct_sign
+
 =back
 
 =cut
 
-my @gct_fields = qw( gct_cycle gct_day gct_segment gct_unit );
+my @gct_fields = qw( gct_sign gct_cycle gct_day gct_segment gct_unit );
 
 sub new {
     my ( $class, %args ) = @_;
@@ -80,10 +82,13 @@ sub new {
     if ( grep { exists $args{$_} } @gct_fields ) {
         $self = $class->catastrophe;
 
+        my $sign    = $args{gct_sign}    || "";
         my $cycle   = $args{gct_cycle}   || 0;
         my $day     = $args{gct_day}     || 0;
         my $segment = $args{gct_segment} || 0;
         my $unit    = $args{gct_unit}    || 0;
+
+        $sign = "" unless "-" eq $sign;
 
         my $total_units = $unit;
         $total_units += $segment * 1_000;
@@ -94,7 +99,12 @@ sub new {
         # round
         $add_secs = int( $add_secs + 0.5 );
 
-        $self->add( seconds => $add_secs );
+        if ( "-" eq $sign ) {
+            $self->subtract( seconds => $add_secs );
+        }
+        else {
+            $self->add( seconds => $add_secs );
+        }
     }
     elsif ( %args ) {
         $self = $class->SUPER::new(
@@ -134,6 +144,18 @@ sub catastrophe {
 
     return ref $self ? ref($self)->new(@args)
                      : $self->SUPER::new(@args);
+}
+
+=head2 gct_sign
+
+Pre-catastrophe dates return a C<-> sign.
+
+=cut
+
+sub gct_sign {
+    my ( $self ) = @_;
+
+    return $self->_return_gct('sign');
 }
 
 =head2 gct_cycle
@@ -187,18 +209,28 @@ sub gct_unit {
 sub _return_gct {
     my ( $self, $type, $seconds ) = @_;
 
-    if ( !defined $seconds ) {
+    my $sign = "";
+
+    if ( defined $seconds ) {
+        $sign = "-" if $seconds < 0;
+        $seconds = abs $seconds;
+    }
+    else {
         my $dt1 = $self->catastrophe;
         $dt1->set_time_zone('UTC');
 
         my $self_tz = $self->time_zone;
         $self->set_time_zone('UTC');
 
-        my $dur     = $self->subtract_datetime_absolute( $dt1 );
+        my $dur  = $self->subtract_datetime_absolute( $dt1 );
         $seconds = $dur->seconds;
+
+        $sign = "-" if $dur->is_negative;
 
         $self->set_time_zone($self_tz);
     }
+
+    return $sign if 'sign' eq $type;
 
     my $delta_units = $seconds / $SECS_2_UNITS;
 
@@ -224,7 +256,7 @@ sub _return_gct {
 
     return $units if 'unit' eq $type;
 
-    return [ $cycles, $days, $segments, $units ];
+    return [ $sign, $cycles, $days, $segments, $units ];
 }
 
 =head2 subtract_datetime
@@ -252,11 +284,6 @@ sub subtract_datetime {
         gct_units => ( $seconds / $SECS_2_UNITS ),
     );
 }
-
-=head1 Limitations
-
-Currently does not support negative GCT (pre-catastrophe) dates or negative
-durations.
 
 =head1 AUTHOR
 
