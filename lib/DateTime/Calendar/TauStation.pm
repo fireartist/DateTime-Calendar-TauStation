@@ -1,4 +1,4 @@
-package DateTime::TauStation;
+package DateTime::Calendar::TauStation;
 
 use strict;
 use vars qw ( $VERSION $SECS_2_UNITS );
@@ -9,20 +9,20 @@ use parent 'DateTime';
 
 require DateTime::Duration;
 
-$VERSION = '0.1';
+$VERSION = '0.1.1';
 $VERSION = eval $VERSION;
 
 $SECS_2_UNITS = 0.864;
 
 =head1 NAME
 
-DateTime::TauStation - Handle TauStation GCT datetimes
+DateTime::Calendar::TauStation - Handle TauStation GCT datetimes
 
 =head1 SYNOPSIS
 
-  use DateTime::TauStation;
+  use DateTime::Calendar::TauStation;
   
-  my $dt = DateTime::TauStation->new(
+  my $dt = DateTime::Calendar::TauStation->new(
     cycle   => '001',
     day     => '02',
     segment => '03',
@@ -37,12 +37,12 @@ DateTime::TauStation - Handle TauStation GCT datetimes
 Alternatively, combine with L<DateTime::Duration::TauStation> and
 L<DateTime::Format::TauStation>.
 
-  use DateTime::TauStation;
+  use DateTime::Calendar::TauStation;
   use DateTime::Format::TauStation;
   
   my $dur = DateTime::Format::TauStation->parse_duration( 'D/20:000 GCT' );
   
-  my $dt = DateTime::TauStation->now->add_duration( $dur );
+  my $dt = DateTime::Calendar::TauStation->now->add_duration( $dur );
   
   print DateTime::Format::TauStation->format_datetime($dt);
 

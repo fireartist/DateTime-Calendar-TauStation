@@ -4,11 +4,11 @@ use strict;
 use vars qw ($VERSION);
 
 use Carp;
-use DateTime::TauStation;
+use DateTime::Calendar::TauStation;
 use POSIX 'floor';
 use parent 'DateTime::Duration';
 
-$VERSION = '0.1';
+$VERSION = '0.1.1';
 $VERSION = eval $VERSION;
 
 =head1 NAME
@@ -17,12 +17,12 @@ DateTime::Duration::TauStation - TauStation GCT duration objects.
 
 =head1 SYNOPSIS
 
-  use DateTime::TauStation;
+  use DateTime::Calendar::TauStation;
   use DateTime::Format::TauStation;
   
   my $dur = DateTime::Format::TauStation->parse_duration( 'D/20:000 GCT' );
   
-  my $dt = DateTime::TauStation->now->add_duration( $dur );
+  my $dt = DateTime::Calendar::TauStation->now->add_duration( $dur );
   
   print DateTime::Format::TauStation->format_datetime($dt);
 
@@ -44,10 +44,10 @@ sub new {
         @gct_fields;
 
     if ( %gct_args ) {
-        my $dt1 = DateTime::TauStation->catastrophe;
+        my $dt1 = DateTime::Calendar::TauStation->catastrophe;
 
         # relative to catastrophe
-        my $dt2 = DateTime::TauStation->new( %gct_args );
+        my $dt2 = DateTime::Calendar::TauStation->new( %gct_args );
 
         my $diff = $dt2->epoch() - $dt1->epoch();
 
@@ -73,7 +73,7 @@ Returns the C<cycle> portion of a duration.
 sub gct_cycles {
     my ( $self ) = @_;
 
-    return DateTime::TauStation->catastrophe->add_duration( $self )->gct_cycle;
+    return DateTime::Calendar::TauStation->catastrophe->add_duration( $self )->gct_cycle;
 }
 
 =head2 gct_days
@@ -85,7 +85,7 @@ Returns the C<day> portion of a duration.
 sub gct_days {
     my ( $self ) = @_;
 
-    return DateTime::TauStation->catastrophe->add_duration( $self )->gct_day;
+    return DateTime::Calendar::TauStation->catastrophe->add_duration( $self )->gct_day;
 }
 
 =head2 gct_segments
@@ -97,7 +97,7 @@ Returns the C<segment> portion of a duration.
 sub gct_segments {
     my ( $self ) = @_;
 
-    return DateTime::TauStation->catastrophe->add_duration( $self )->gct_segment;
+    return DateTime::Calendar::TauStation->catastrophe->add_duration( $self )->gct_segment;
 }
 
 =head2 gct_units
@@ -109,7 +109,7 @@ Returns the C<unit> portion of a duration.
 sub gct_units {
     my ( $self ) = @_;
 
-    return DateTime::TauStation->catastrophe->add_duration( $self )->gct_unit;
+    return DateTime::Calendar::TauStation->catastrophe->add_duration( $self )->gct_unit;
 }
 
 =head1 Limitations
@@ -133,6 +133,6 @@ this module.
 
 =head1 SEE ALSO
 
-L<DateTime::TauStation>, L<DateTime::Format::TauStation>
+L<DateTime::Calendar::TauStation>, L<DateTime::Format::TauStation>
 
 =cut

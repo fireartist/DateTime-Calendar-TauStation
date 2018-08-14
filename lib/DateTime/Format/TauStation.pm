@@ -4,11 +4,11 @@ use strict;
 use vars qw ($VERSION);
 
 use Carp;
-use DateTime::TauStation;
+use DateTime::Calendar::TauStation;
 use DateTime::Duration::TauStation;
 use parent 'DateTime::Format::Builder';
 
-$VERSION = '0.1';
+$VERSION = '0.1.1';
 $VERSION = eval $VERSION;
 
 =head1 NAME
@@ -60,7 +60,7 @@ my $parse_datetime = {
         my ( $parser, %args ) = @_;
         my %gct = map { $_ => $args{$_} } @gct_fields;
 
-        return DateTime::TauStation->new(%gct);
+        return DateTime::Calendar::TauStation->new(%gct);
     },
 };
 
@@ -106,14 +106,14 @@ DateTime::Format::Builder->create_class
 Requires a full datetime string such as "0.1/02:003", where C<0> is the
 C<cycle>, C<1> is the day, C<03> is the segment, and C<004> is the unit.
 
-Returns a L<DateTime::TauStation> object.
+Returns a L<DateTime::Calendar::TauStation> object.
 
 =head2 parse_duration
 
 Supports the following forms of duration strings: C<D4.3/02:001 GCT>,
 C<D3/02:001 GCT> and C<D/02:001 GCT>.
 
-Returns a L<DateTime::TauStation> object.
+Returns a L<DateTime::Calendar::TauStation> object.
 
 =head2 format_datetime
 
@@ -146,7 +146,7 @@ sub format_duration {
     my $seconds = $dur->delta_seconds;
 
     my ( $cycles, $days, $segments, $units ) =
-        @{ DateTime::TauStation->new->_return_gct( undef, $seconds ) };
+        @{ DateTime::Calendar::TauStation->new->_return_gct( undef, $seconds ) };
 
     if ( $cycles ) {
         return sprintf "D%d.%d/%.2d:%.3d GCT",
@@ -195,6 +195,6 @@ this module.
 
 =head1 SEE ALSO
 
-L<DateTime::TauStation>, L<DateTime::Duration::TauStation>
+L<DateTime::Calendar::TauStation>, L<DateTime::Duration::TauStation>
 
 =cut
