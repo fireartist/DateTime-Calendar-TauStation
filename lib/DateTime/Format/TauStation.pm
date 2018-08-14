@@ -107,8 +107,8 @@ DateTime::Format::Builder->create_class
 
 =head2 parse_datetime
 
-Requires a full datetime string such as "0.1/02:003", where C<0> is the
-C<cycle>, C<1> is the day, C<03> is the segment, and C<004> is the unit.
+Requires a full datetime string such as C<000.01/02:003>, where C<000> is the
+cycle, C<01> is the day, C<02> is the segment, and C<003> is the unit.
 
 Returns a L<DateTime::Calendar::TauStation> object.
 
