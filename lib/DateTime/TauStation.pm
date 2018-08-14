@@ -262,6 +262,10 @@ durations.
 
 Carl Franks
 
+=head1 CREDITS
+
+Based on code from L<https://github.com/zoffixznet/perl6-Games-TauStation-DateTime>.
+
 =head1 COPYRIGHT
 
 Copyright (c) 2018 Carl Franks.
